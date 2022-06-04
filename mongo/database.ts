@@ -19,6 +19,7 @@ export function connect(): Promise<Db> {
         } else if (client === undefined) {
           reject(new Error('The generated MongoClient was undefined'));
         } else {
+          // The database to be used is informed on the connection string
           database = client.db();
           resolve(database);
         }
