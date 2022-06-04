@@ -1,9 +1,17 @@
-import ExpressServer from './express-server';
+import bodyParser from 'body-parser';
+import express from 'express';
+
 import leagueRouter from './routers/league';
 
-const port = 8080;
-const server = new ExpressServer(port);
+const port = 80;
+const app = express();
 
-server.addRouter('/league', leagueRouter);
+// middleware configuration
+app.use(bodyParser.json());
 
-server.start(() => console.log(`express listening on http://localhost:${port}`));
+// API routers
+app.use('/league', leagueRouter);
+
+app.listen(port, () => {
+  console.log(`express listening on http://localhost:${port}`);
+});
