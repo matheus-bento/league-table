@@ -7,7 +7,7 @@ const leagueRouter: Router = router();
 
 /**
  * Gets the league by the ID.
- * Usage: GET /league/89a9b7a9ce
+ * Usage: GET /league/62a16c8a15533e2beba23774
  */
 leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
   try {
