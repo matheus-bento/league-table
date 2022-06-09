@@ -8,22 +8,26 @@ let database: Db | null = null;
  * @return {Promise<Db>} A promise with the opened database connection
  */
 export function connect(): Promise<Db> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (database === null) {
-      if (process.env.MONGODB_CONN_STR === undefined) {
-        throw new Error('The mongodb connection string was not defined');
-      }
-      MongoClient.connect(process.env.MONGODB_CONN_STR, (err, client) => {
-        if (err !== undefined) {
-          reject(err);
-        } else if (client === undefined) {
-          reject(new Error('The generated MongoClient was undefined'));
+      try {
+        if (process.env.MONGODB_CONN_STR === undefined) {
+          throw new Error('The mongodb connection string was not defined');
         } else {
           // The database to be used is informed on the connection string
-          database = client.db();
-          resolve(database);
+          const client =
+              await new MongoClient(process.env.MONGODB_CONN_STR).connect();
+
+          if (client === undefined) {
+            throw new Error('The generated MongoClient was undefined');
+          } else {
+            database = client.db();
+            resolve(database);
+          }
         }
-      });
+      } catch (err) {
+        reject(err);
+      }
     } else {
       resolve(database);
     }

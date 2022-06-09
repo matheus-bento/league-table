@@ -1,5 +1,5 @@
 import router, {Router, Request, Response} from 'express';
-import {Db} from 'mongodb';
+import {InsertOneResult, ObjectId} from 'mongodb';
 
 import * as MongoDatabase from '../mongo/database';
 
@@ -7,62 +7,56 @@ const leagueRouter: Router = router();
 
 /**
  * Gets the league by the ID.
- * Usage: GET /league/1
+ * Usage: GET /league/89a9b7a9ce
  */
-leagueRouter.get('/:id', (req: Request<{ id: number }>, res: Response) => {
-  MongoDatabase
-      .connect()
-      .then((db: Db) => {
-        db.collection('leagues')
-            .findOne({id: req.params.id})
-            .then((league) => {
-              if (league !== null) {
-                res.status(200);
-                res.send({
-                  id: req.params.id,
-                  name: 'Test league',
-                });
-              } else {
-                res.status(404);
-                res.send('League not found');
-              }
-            });
-      })
-      .catch((err) => {
-        console.log(`[ERROR] Error on GET "${req.path}": ${err}`);
-      });
+leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
+  try {
+    const db = await MongoDatabase.connect();
+
+    const league =
+      await db.collection('leagues')
+          .findOne({_id: ObjectId.createFromHexString(req.params.id)});
+
+    if (league !== null) {
+      res.status(200);
+      res.send(league);
+    } else {
+      res.status(404);
+      res.send('League not found');
+    }
+  } catch (err) {
+    console.log(`[ERROR] Error on GET "${req.path}": ${err}`);
+  }
 });
 
 /**
  * Inserts a league.
  * Usage: POST /league
  */
-leagueRouter.post('/', (req, res) => {
-  MongoDatabase
-      .connect()
-      .then((db: Db) => {
-        db.collection('leagues')
-            .insertOne(req.body)
-            .then((mongoResponse) => {
-              if (mongoResponse !== null) {
-                const inserted =
-                    db.collection('leagues')
-                        .findOne({'_id': mongoResponse.insertedId});
+leagueRouter.post('/', async (req, res) => {
+  try {
+    const db = await MongoDatabase.connect();
 
-                res.status(200);
-                res.send(inserted);
-              }
-            })
-            .catch((err) => {
-              console.log(`[ERROR] Error on league insertion: ${err}`);
+    const mongoResponse: InsertOneResult<Document> =
+      await db.collection('leagues')
+          .insertOne(req.body);
 
-              res.status(500);
-              res.send('League could not be inserted');
-            });
-      })
-      .catch((err) => {
-        console.log(`[ERROR] Error on POST "${req.path}": ${err}`);
-      });
+    console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
+
+    if (mongoResponse !== null) {
+      const league =
+          await db.collection('leagues')
+              .findOne({_id: mongoResponse.insertedId});
+
+      res.status(200);
+      res.send(league);
+    }
+  } catch (err) {
+    console.log(`[ERROR] Error on POST "${req.path}": ${err}`);
+
+    res.status(500);
+    res.send('League could not be inserted');
+  }
 });
 
 export default leagueRouter;
