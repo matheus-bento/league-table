@@ -1,8 +1,8 @@
-import {Model} from '../validation/model';
+import {Model, Validation} from '../validation';
 
 const leagueModel: Model = [
-  ['name', ['string', 'not null', 'not empty']],
-  ['teams', ['array', 'not empty']],
+  ['name', [Validation.Types.String, Validation.NotNull, Validation.NotEmpty]],
+  ['teams', [Validation.Types.Array, Validation.NotEmpty]],
 ];
 
 export default leagueModel;

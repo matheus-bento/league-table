@@ -1,45 +1,23 @@
-import {isCustomValidation, isSimpleValidation, Model} from './model';
+import * as model from './model';
+import {Model, Validation} from './model';
 
-type RegisteredModel = { name: string, model: Model };
+type RegisteredModel = { name: string, model: model.Model };
 const models: Array<RegisteredModel> = [];
 
 /**
  * Validates an object field against default validation options.
- * @param {any} obj Object that contains the field to be validated
- * @param {string} field The name of the field to be validated
- * @param {string} validation The validation to be applied
+ * @param {any} field The field value to be validated
+ * @param {string} validation The validation to be applied. It should be present
+ * in the {@link defaults} map
  * @return {boolean} Wheter or not the field complies with the validation
  */
 function validateDefaultValidations(
-    obj: any,
-    field: string,
+    field: any,
     validation: string): boolean | undefined {
-  if (validation === 'string') {
-    return typeof obj[field] === 'string';
-  } else if (validation === 'number') {
-    return typeof obj[field] === 'number' || typeof obj[field] === 'bigint';
-  } else if (validation === 'boolean') {
-    return typeof obj[field] === 'boolean';
-  } else if (validation === 'array') {
-    return obj[field] instanceof Array;
-  } else if (validation === 'object') {
-    return obj[field] instanceof Object;
-  } else if (validation === 'not null') {
-    return obj[field] !== null;
-  } else if (validation === 'not empty') {
-    if (typeof obj[field] === 'string') {
-      return obj[field] !== '';
-    } else if (obj[field] instanceof Array) {
-      return obj[field].length > 0;
-    } else if (obj[field] instanceof Object) {
-      return Object.getOwnPropertyNames(obj[field]).length > 0;
-    }
+  const validationFunc = model.defaultValidations[validation];
 
-    /*
-      if the field is not of a type that can be empty, it is a valid non empty
-      field
-    */
-    return true;
+  if (validationFunc !== undefined) {
+    return validationFunc(field);
   } else {
     throw new Error(`Unknown validation of type "${validation}"`);
   }
@@ -50,7 +28,7 @@ function validateDefaultValidations(
  * @param {string} name Model name
  * @param {Model} model Model definition
  */
-export function register(name: string, model: Model) {
+export function register(name: string, model: model.Model) {
   if (name === '') {
     throw new Error('The model name cannot be empty');
   }
@@ -74,9 +52,7 @@ export function validate(modelName: string, obj: any): boolean {
     throw new Error(`No model named "${modelName}" was found`);
   }
 
-  const model = registeredModel.model;
-
-  for (const field of model) {
+  for (const field of registeredModel.model) {
     /*
       A simple string in the model only verifies if a field with this given
       name exists
@@ -85,7 +61,7 @@ export function validate(modelName: string, obj: any): boolean {
       if (!obj.hasOwnProperty(field)) {
         return false;
       }
-    } else if (isSimpleValidation(field)) {
+    } else if (model.isSimpleValidation(field)) {
       const name: string = field[0];
       if (!obj.hasOwnProperty(name)) {
         return false;
@@ -93,17 +69,17 @@ export function validate(modelName: string, obj: any): boolean {
 
       const validations: string | string[] = field[1];
       if (typeof validations === 'string') {
-        if (!validateDefaultValidations(obj, name, validations)) {
+        if (!validateDefaultValidations(obj[name], validations)) {
           return false;
         }
       } else {
         for (const validation of validations) {
-          if (!validateDefaultValidations(obj, name, validation)) {
+          if (!validateDefaultValidations(obj[name], validation)) {
             return false;
           }
         }
       }
-    } else if (isCustomValidation(field)) {
+    } else if (model.isCustomValidation(field)) {
       const name: string = field[0];
       if (!obj.hasOwnProperty(name)) {
         return false;
@@ -118,3 +94,5 @@ export function validate(modelName: string, obj: any): boolean {
 
   return true;
 }
+
+export {Validation, Model};
