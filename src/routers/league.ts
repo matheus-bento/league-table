@@ -7,6 +7,34 @@ import * as validation from '../mongo/validation';
 const leagueRouter: Router = router();
 
 /**
+ * Gets all leagues.
+ * Usage: GET /league
+ */
+leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
+  try {
+    const db = await MongoDatabase.connect();
+
+    const leagueCursor = await db.collection('leagues').find();
+
+    if (leagueCursor !== null) {
+      const leagues: any[] = [];
+
+      while (await leagueCursor.hasNext()) {
+        leagues.push(await leagueCursor.next());
+      }
+
+      res.status(200);
+      res.send(leagues);
+    } else {
+      res.status(404);
+      res.send('No leagues found');
+    }
+  } catch (err) {
+    console.log(`[ERROR] Error on GET "${req.path}": ${err}`);
+  }
+});
+
+/**
  * Gets the league by the ID.
  * Usage: GET /league/62a16c8a15533e2beba23774
  */
