@@ -2,6 +2,7 @@ import router, {Router, Request, Response} from 'express';
 import {InsertOneResult, ObjectId} from 'mongodb';
 
 import * as MongoDatabase from '../mongo/database';
+import * as validation from '../mongo/validation';
 
 const leagueRouter: Router = router();
 
@@ -37,19 +38,24 @@ leagueRouter.post('/', async (req, res) => {
   try {
     const db = await MongoDatabase.connect();
 
-    const mongoResponse: InsertOneResult<Document> =
-      await db.collection('leagues')
-          .insertOne(req.body);
+    if (validation.validate('league', req.body)) {
+      const mongoResponse: InsertOneResult<Document> =
+        await db.collection('leagues')
+            .insertOne(req.body);
 
-    console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
+      console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
 
-    if (mongoResponse !== null) {
-      const league =
-          await db.collection('leagues')
-              .findOne({_id: mongoResponse.insertedId});
+      if (mongoResponse !== null) {
+        const league =
+            await db.collection('leagues')
+                .findOne({_id: mongoResponse.insertedId});
 
-      res.status(200);
-      res.send(league);
+        res.status(200);
+        res.send(league);
+      }
+    } else {
+      res.status(400);
+      res.send('The informed object does not fit the league model');
     }
   } catch (err) {
     console.log(`[ERROR] Error on POST "${req.path}": ${err}`);
