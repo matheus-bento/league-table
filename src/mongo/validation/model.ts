@@ -20,7 +20,7 @@ export const isSimpleValidation =
  *
  *     ['messages', (record) => record instanceof Array && record.length <= 10]
  */
-export type CustomValidation = [string, (field: any, obj?: any) => Boolean];
+export type CustomValidation = [string, (field: any, obj?: any) => boolean];
 
 export const isCustomValidation =
   (x: any): x is CustomValidation => (x as CustomValidation) !== undefined;
