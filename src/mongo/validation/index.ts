@@ -110,7 +110,7 @@ export function validate(modelName: string, obj: any): boolean {
       }
 
       const validationFunction = field[1];
-      if (!validationFunction(obj)) {
+      if (!validationFunction(obj[name], obj)) {
         return false;
       }
     }
