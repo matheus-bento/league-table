@@ -33,6 +33,15 @@ export function register(name: string, model: model.Model) {
     throw new Error('The model name cannot be empty');
   }
 
+  const existingModel: RegisteredModel | undefined =
+      models.find((m) => m.name === name);
+
+  if (existingModel !== undefined) {
+    throw new Error(
+        `A model named "${name} was already registered with the following
+fields: ${JSON.stringify(existingModel)}`);
+  }
+
   models.push({
     name: name,
     model: model,
