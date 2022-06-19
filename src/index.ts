@@ -3,7 +3,7 @@ import express from 'express';
 
 import leagueRouter from './routers/league';
 import * as validation from './mongo/validation';
-import leagueModel from './mongo/model/league';
+import {leagueModel, leaguePatchModel} from './mongo/model/league';
 
 const port = 80;
 const app = express();
@@ -16,6 +16,7 @@ app.use('/league', leagueRouter);
 
 // model registration
 validation.register('league', leagueModel);
+validation.register('league-patch', leaguePatchModel);
 
 app.listen(port, () => {
   console.log(`express listening on http://localhost:${port}`);
