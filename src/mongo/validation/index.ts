@@ -54,7 +54,7 @@ fields: ${JSON.stringify(existingModel)}`);
  * @param {any} obj The object to be validated
  * @return {boolean} Wheter or not the object is valid, according to the model
  */
-export function validate(modelName: string, obj: any): boolean {
+export function validateModel(modelName: string, obj: any): boolean {
   const registeredModel = models.find((m) => m.name === modelName);
 
   if (registeredModel === undefined) {

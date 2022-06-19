@@ -12,7 +12,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'string-model',
             {field: 'John Doe'}));
   });
@@ -25,7 +25,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'number-model',
             {field: 30}));
   });
@@ -38,7 +38,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'bool-model',
             {field: true}));
   });
@@ -51,7 +51,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'array-model',
             {field: [0, 1, 2]}));
   });
@@ -64,7 +64,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'obj-model',
             {
               field: {prop: 'value'},
@@ -79,7 +79,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'string-not-null-model',
             {field: 'Plain Jane'}));
   });
@@ -92,7 +92,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'number-not-null-model',
             {field: 7}));
   });
@@ -105,7 +105,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'bool-not-null-model',
             {field: true}));
   });
@@ -118,7 +118,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'array-not-null-model',
             {field: [3, 4, 5]}));
   });
@@ -131,7 +131,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'obj-not-null-model',
             {field: {prop: 'value'}}));
   });
@@ -144,7 +144,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'string-not-empty-model',
             {field: 'text'}));
   });
@@ -157,7 +157,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'array-not-empty-model',
             {field: [6, 7]}));
   });
@@ -170,7 +170,7 @@ describe('Mongo model validation', function() {
         ]);
 
     assert.isTrue(
-        validation.validate(
+        validation.validateModel(
             'obj-not-empty-model',
             {field: {prop: 'value'}}));
   });

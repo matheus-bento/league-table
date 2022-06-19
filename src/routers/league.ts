@@ -66,7 +66,7 @@ leagueRouter.post('/', async (req, res) => {
   try {
     const db = await MongoDatabase.connect();
 
-    if (validation.validate('league', req.body)) {
+    if (validation.validateModel('league', req.body)) {
       const mongoResponse: InsertOneResult<Document> =
         await db.collection('leagues')
             .insertOne(req.body);
