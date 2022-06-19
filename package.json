@@ -8,7 +8,7 @@
     "clean": "rm -rf ./dist",
     "build": "npm run lint && npx tsc",
     "rebuild": "npm run clean && npm run build",
-    "lint": "npx eslint 'src/**' && npx eslint 'test/**'",
+    "lint": "npx eslint --fix 'src/**' && npx eslint --fix 'test/**'",
     "test": "npx mocha './dist/test/*.js'"
   },
   "repository": {
