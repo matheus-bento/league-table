@@ -171,6 +171,14 @@ export function validateFields(modelName: string, obj: any): boolean {
         break;
       }
     }
+
+    /*
+      If the field isn't valid according to any of the model rules, the object
+      is invalid
+    */
+    if (!isFieldValid) {
+      return false;
+    }
   }
 
   return true;
