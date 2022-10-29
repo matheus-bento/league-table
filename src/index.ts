@@ -5,7 +5,7 @@ import leagueRouter from './routers/league';
 import * as validation from './mongo/validation';
 import {leagueModel, leaguePatchModel} from './mongo/model/league';
 
-const port = 80;
+const port = process.env.PORT;
 const app = express();
 
 // middleware configuration

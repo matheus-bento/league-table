@@ -6,6 +6,7 @@
         "request": "launch",
         "program": "${workspaceRoot}/dist/src/index.js",
         "env": {
+            "PORT": "8080",
             "MONGODB_CONN_STR": "<mongo-connection-string>"
         }
       }
