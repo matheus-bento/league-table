@@ -1,0 +1,14 @@
+{
+  "configurations": {
+    "run": {
+      "adapter": "vscode-node",
+      "configuration": {
+        "request": "launch",
+        "program": "${workspaceRoot}/dist/src/index.js",
+        "env": {
+            "MONGODB_CONN_STR": "<mongo-connection-string>"
+        }
+      }
+    }
+  }
+}
