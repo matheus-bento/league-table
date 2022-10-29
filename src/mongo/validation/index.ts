@@ -1,7 +1,7 @@
-import * as model from './model';
+import * as modelValidation from './model';
 import {Model, Validation} from './model';
 
-type RegisteredModel = { name: string, model: model.Model };
+type RegisteredModel = { name: string, model: modelValidation.Model };
 const models: Array<RegisteredModel> = [];
 
 /**
@@ -14,7 +14,7 @@ const models: Array<RegisteredModel> = [];
 function validateDefaultValidations(
     field: any,
     validation: string): boolean | undefined {
-  const validationFunc = model.defaultValidations[validation];
+  const validationFunc = modelValidation.defaultValidations[validation];
 
   if (validationFunc !== undefined) {
     return validationFunc(field);
@@ -28,7 +28,7 @@ function validateDefaultValidations(
  * @param {string} name Model name
  * @param {Model} model Model definition
  */
-export function register(name: string, model: model.Model) {
+export function register(name: string, model: modelValidation.Model) {
   if (name === '') {
     throw new Error('The model name cannot be empty');
   }
@@ -55,7 +55,7 @@ fields: ${JSON.stringify(existingModel)}`);
  * @param {any} obj The object to be validated
  * @return {boolean} Wheter or not the object is valid, according to the model
  */
-export function validateModel(modelName: string, obj: any): boolean {
+export function model(modelName: string, obj: any): boolean {
   const registeredModel = models.find((m) => m.name === modelName);
 
   if (registeredModel === undefined) {
@@ -71,7 +71,7 @@ export function validateModel(modelName: string, obj: any): boolean {
       if (!obj.hasOwnProperty(field)) {
         return false;
       }
-    } else if (model.isSimpleValidation(field)) {
+    } else if (modelValidation.isSimpleValidation(field)) {
       const name: string = field[0];
       if (!obj.hasOwnProperty(name)) {
         return false;
@@ -89,7 +89,7 @@ export function validateModel(modelName: string, obj: any): boolean {
           }
         }
       }
-    } else if (model.isCustomValidation(field)) {
+    } else if (modelValidation.isCustomValidation(field)) {
       const name: string = field[0];
       if (!obj.hasOwnProperty(name)) {
         return false;
@@ -114,7 +114,7 @@ export function validateModel(modelName: string, obj: any): boolean {
  * @return {boolean} Wheter or not the object fields are valid, according to the
  * specified model
  */
-export function validateFields(modelName: string, obj: any): boolean {
+export function partialModel(modelName: string, obj: any): boolean {
   const registeredModel = models.find((m) => m.name === modelName);
 
   if (registeredModel === undefined) {
@@ -133,7 +133,7 @@ export function validateFields(modelName: string, obj: any): boolean {
         if (obj.hasOwnProperty(modelField)) {
           isFieldValid = true;
         }
-      } else if (model.isSimpleValidation(modelField)) {
+      } else if (modelValidation.isSimpleValidation(modelField)) {
         const name: string = modelField[0];
         if (!obj.hasOwnProperty(name)) {
           continue;
@@ -151,7 +151,7 @@ export function validateFields(modelName: string, obj: any): boolean {
             }
           }
         }
-      } else if (model.isCustomValidation(modelField)) {
+      } else if (modelValidation.isCustomValidation(modelField)) {
         const name: string = modelField[0];
         if (!obj.hasOwnProperty(name)) {
           continue;

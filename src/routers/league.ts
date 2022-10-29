@@ -1,20 +1,20 @@
 import router, {Router, Request, Response} from 'express';
-import {InsertOneResult, ObjectId} from 'mongodb';
+import {InsertOneResult, ObjectId, UpdateResult} from 'mongodb';
 
 import * as MongoDatabase from '../mongo/database';
 import * as validation from '../mongo/validation';
 
 const leagueRouter: Router = router();
 
-/**
- * Gets all leagues.
- * Usage: GET /league
+/*
+  Gets all leagues.
+  Usage: GET /league
  */
 leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
   try {
     const db = await MongoDatabase.connect();
 
-    const leagueCursor = await db.collection('leagues').find();
+    const leagueCursor = db.collection('leagues').find();
 
     if (leagueCursor !== null) {
       const leagues: any[] = [];
@@ -34,9 +34,9 @@ leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
   }
 });
 
-/**
- * Gets the league by the ID.
- * Usage: GET /league/62a16c8a15533e2beba23774
+/*
+  Gets the league by the ID.
+  Usage: GET /league/62a16c8a15533e2beba23774
  */
 leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
   try {
@@ -58,15 +58,15 @@ leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
   }
 });
 
-/**
- * Inserts a league.
- * Usage: POST /league
+/*
+  Inserts a league.
+  Usage: POST /league
  */
 leagueRouter.post('/', async (req, res) => {
   try {
     const db = await MongoDatabase.connect();
 
-    if (validation.validateModel('league', req.body)) {
+    if (validation.model('league', req.body)) {
       const mongoResponse: InsertOneResult<Document> =
         await db.collection('leagues')
             .insertOne(req.body);
@@ -90,6 +90,47 @@ leagueRouter.post('/', async (req, res) => {
 
     res.status(500);
     res.send('League could not be inserted');
+  }
+});
+
+/*
+  Partially updates a league's information
+  Usage: PATCH /league
+ */
+leagueRouter.patch('/', async (req, res) => {
+  try {
+    const db = await MongoDatabase.connect();
+
+    if (validation.partialModel('league-patch', req.body)) {
+      const leagueBody = {...req.body};
+
+      /*
+        Removing the _id informed in the request so the mongodb driver doesn't
+        try to update it.
+       */
+      delete leagueBody._id;
+
+      const mongoResponse: UpdateResult = await db.collection('league')
+          .updateOne(
+              {_id: ObjectId.createFromHexString(req.body._id)},
+              {$set: leagueBody});
+
+      console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
+
+      if (mongoResponse !== null) {
+        const league =
+            await db.collection('leagues')
+                .findOne({_id: mongoResponse.upsertedId});
+
+        res.status(200);
+        res.send(league);
+      }
+    }
+  } catch (err) {
+    console.log(`[ERROR] Error on PATCH "${req.path}": ${err}`);
+
+    res.status(500);
+    res.send('League could not be patched');
   }
 });
 

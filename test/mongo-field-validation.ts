@@ -12,7 +12,7 @@ describe('Mongo field validation', function() {
         ]);
 
         assert.isTrue(
-            validation.validateFields('all-fields', {
+            validation.partialModel('all-fields', {
               name: 'John Doe',
               age: 30,
             }));
@@ -26,7 +26,7 @@ describe('Mongo field validation', function() {
         ]);
 
         assert.isTrue(
-            validation.validateFields('partial-fields', {
+            validation.partialModel('partial-fields', {
               name: 'John Doe',
             }));
       });
@@ -39,7 +39,7 @@ describe('Mongo field validation', function() {
         ]);
 
         assert.isFalse(
-            validation.validateFields('no-fields', {
+            validation.partialModel('no-fields', {
               address: '123 1st St.',
             }));
       });
