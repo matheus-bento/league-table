@@ -1,0 +1,23 @@
+services:
+  web:
+    build: .
+    image: league-table
+    container_name: web
+    ports:
+      - 8080:80
+    environment:
+      - MONGODB_CONN_STR=mongodb://league-table:password@mongo:27017/league-table?authSource=admin
+      - PORT=80
+  mongo:
+    image: mongo
+    container_name: db
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=league-table
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - db:/data/db
+volumes:
+  db:
+
