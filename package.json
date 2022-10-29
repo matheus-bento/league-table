@@ -4,7 +4,7 @@
   "description": "A RESTful API to generate a sports league table",
   "main": "./dist/index.js",
   "scripts": {
-    "serve": "npm run build && npm run test && node ./dist/index.js",
+    "serve": "npm run build && npm run test && node ./dist/src/index.js",
     "clean": "rm -rf ./dist",
     "build": "npm run lint && npx tsc",
     "rebuild": "npm run clean && npm run build",
