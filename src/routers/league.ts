@@ -11,7 +11,7 @@ import * as MongoDatabase from '../database';
 import {LeagueRepository} from '../database/repository/league';
 import {League} from '../model/league';
 
-import {RequestWithBody} from './types';
+import {RequestWithBody, RequestWithBodyAndParams} from './types';
 
 const leagueRouter: Router = router();
 
@@ -108,30 +108,39 @@ leagueRouter.post('/', async (req: RequestWithBody<League>, res) => {
   Partially updates a league's information
   Usage: PATCH /league
  */
-leagueRouter.patch('/', async (req: RequestWithBody<WithId<League>>, res) => {
-  try {
-    const db = await MongoDatabase.connect();
-    const leagueRepository = new LeagueRepository(db);
+leagueRouter.patch(
+    '/:id', async (
+        req: RequestWithBodyAndParams<{id: string}, WithId<League>>, res) => {
+      try {
+        const db = await MongoDatabase.connect();
+        const leagueRepository = new LeagueRepository(db);
 
-    const mongoResponse: UpdateResult =
-      await leagueRepository.updateDocument('league', req.body._id, req.body);
+        const leagueId = ObjectId.createFromHexString(req.params.id);
 
-    console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
+        const mongoResponse: UpdateResult =
+          await leagueRepository
+              .updateDocument('leagues', leagueId, req.body);
 
-    if (mongoResponse !== null) {
-      const league =
-        await leagueRepository
-            .findByObjectId('leagues', mongoResponse.upsertedId);
+        console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
 
-      res.status(200);
-      res.send(league);
-    }
-  } catch (err) {
-    console.log(`[ERROR] Error on PATCH "${req.path}": ${err}`);
+        if (mongoResponse !== null) {
+          const league =
+            await leagueRepository
+                .findByObjectId('leagues', leagueId);
 
-    res.status(500);
-    res.send('An error occurred when processing this request');
-  }
-});
+          res.status(200);
+          res.send(league);
+        } else {
+          throw new Error(
+              `Could not patch document of _id "${req.body._id} with fields ` +
+              `"${JSON.stringify(req.body)}"`);
+        }
+      } catch (err) {
+        console.log(`[ERROR] Error on PATCH "${req.path}": ${err}`);
+
+        res.status(500);
+        res.send('An error occurred when processing this request');
+      }
+    });
 
 export default leagueRouter;
