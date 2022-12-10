@@ -7,7 +7,7 @@
                 "program": "${workspaceRoot}/dist/src/index.js",
                 "env": {
                     "PORT": "8080",
-                    "MONGODB_CONN_STR": "<mongo-connection-string>"
+                    "MONGODB_CONN_STR": "mongodb://root:password@localhost:27017/league-table?authSource=admin"
                 }
             },
             "breakpoints": {

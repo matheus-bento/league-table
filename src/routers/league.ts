@@ -1,8 +1,17 @@
 import router, {Router, Request, Response} from 'express';
-import {InsertOneResult, ObjectId, UpdateResult} from 'mongodb';
+import {
+  InsertOneResult,
+  ObjectId,
+  UpdateResult,
+  WithId,
+  Document,
+} from 'mongodb';
 
-import * as MongoDatabase from '../mongo/database';
-import * as validation from '../mongo/validation';
+import * as MongoDatabase from '../database';
+import {LeagueRepository} from '../database/repository/league';
+import {League} from '../model/league';
+
+import {RequestWithBody} from './types';
 
 const leagueRouter: Router = router();
 
@@ -13,16 +22,12 @@ const leagueRouter: Router = router();
 leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
   try {
     const db = await MongoDatabase.connect();
+    const leagueRepository = new LeagueRepository(db);
 
-    const leagueCursor = db.collection('leagues').find();
+    const leagues: Array<WithId<Document>> | null =
+        await leagueRepository.find('leagues');
 
-    if (leagueCursor !== null) {
-      const leagues: any[] = [];
-
-      while (await leagueCursor.hasNext()) {
-        leagues.push(await leagueCursor.next());
-      }
-
+    if (leagues !== null && leagues.length > 0) {
       res.status(200);
       res.send(leagues);
     } else {
@@ -31,6 +36,9 @@ leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
     }
   } catch (err) {
     console.log(`[ERROR] Error on GET "${req.path}": ${err}`);
+
+    res.status(500);
+    res.send('An error occurred when processing this request');
   }
 });
 
@@ -41,10 +49,13 @@ leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
 leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
   try {
     const db = await MongoDatabase.connect();
+    const leagueRepository = new LeagueRepository(db);
 
-    const league =
-      await db.collection('leagues')
-          .findOne({_id: ObjectId.createFromHexString(req.params.id)});
+    const league: WithId<Document> | null =
+      await leagueRepository
+          .findByObjectId(
+              'leagues',
+              ObjectId.createFromHexString(req.params.id));
 
     if (league !== null) {
       res.status(200);
@@ -55,6 +66,9 @@ leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
     }
   } catch (err) {
     console.log(`[ERROR] Error on GET "${req.path}": ${err}`);
+
+    res.status(500);
+    res.send('An error occurred when processing this request');
   }
 });
 
@@ -62,34 +76,31 @@ leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
   Inserts a league.
   Usage: POST /league
  */
-leagueRouter.post('/', async (req, res) => {
+leagueRouter.post('/', async (req: RequestWithBody<League>, res) => {
   try {
     const db = await MongoDatabase.connect();
+    const leagueRepository = new LeagueRepository(db);
 
-    if (validation.model('league', req.body)) {
-      const mongoResponse: InsertOneResult<Document> =
-        await db.collection('leagues')
-            .insertOne(req.body);
+    const mongoResponse: InsertOneResult<Document> =
+      await leagueRepository.insert('leagues', req.body);
 
-      console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
+    console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
 
-      if (mongoResponse !== null) {
-        const league =
-            await db.collection('leagues')
-                .findOne({_id: mongoResponse.insertedId});
+    if (mongoResponse !== null) {
+      const league =
+        await leagueRepository
+            .findByObjectId('leagues', mongoResponse.insertedId);
 
-        res.status(200);
-        res.send(league);
-      }
+      res.status(200);
+      res.send(league);
     } else {
-      res.status(400);
-      res.send('The informed object does not fit the league model');
+      throw new Error('InsertOneResult was null');
     }
   } catch (err) {
     console.log(`[ERROR] Error on POST "${req.path}": ${err}`);
 
     res.status(500);
-    res.send('League could not be inserted');
+    res.send('An error occurred when processing this request');
   }
 });
 
@@ -97,40 +108,29 @@ leagueRouter.post('/', async (req, res) => {
   Partially updates a league's information
   Usage: PATCH /league
  */
-leagueRouter.patch('/', async (req, res) => {
+leagueRouter.patch('/', async (req: RequestWithBody<WithId<League>>, res) => {
   try {
     const db = await MongoDatabase.connect();
+    const leagueRepository = new LeagueRepository(db);
 
-    if (validation.partialModel('league-patch', req.body)) {
-      const leagueBody = {...req.body};
+    const mongoResponse: UpdateResult =
+      await leagueRepository.updateDocument('league', req.body._id, req.body);
 
-      /*
-        Removing the _id informed in the request so the mongodb driver doesn't
-        try to update it.
-       */
-      delete leagueBody._id;
+    console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
 
-      const mongoResponse: UpdateResult = await db.collection('league')
-          .updateOne(
-              {_id: ObjectId.createFromHexString(req.body._id)},
-              {$set: leagueBody});
+    if (mongoResponse !== null) {
+      const league =
+        await leagueRepository
+            .findByObjectId('leagues', mongoResponse.upsertedId);
 
-      console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
-
-      if (mongoResponse !== null) {
-        const league =
-            await db.collection('leagues')
-                .findOne({_id: mongoResponse.upsertedId});
-
-        res.status(200);
-        res.send(league);
-      }
+      res.status(200);
+      res.send(league);
     }
   } catch (err) {
     console.log(`[ERROR] Error on PATCH "${req.path}": ${err}`);
 
     res.status(500);
-    res.send('League could not be patched');
+    res.send('An error occurred when processing this request');
   }
 });
 

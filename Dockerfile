@@ -8,4 +8,4 @@ COPY package.json .
 COPY package-lock.json .
 
 RUN npm install --omit=dev
-ENTRYPOINT [ "node", "./src/index.js" ]
+ENTRYPOINT [ "node", "./index.js" ]
