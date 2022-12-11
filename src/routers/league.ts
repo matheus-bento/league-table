@@ -1,15 +1,9 @@
 import router, {Router, Request, Response} from 'express';
-import {
-  InsertOneResult,
-  ObjectId,
-  UpdateResult,
-  WithId,
-  Document,
-} from 'mongodb';
+import {ObjectId, WithId} from 'mongodb';
 
 import * as MongoDatabase from '../database';
-import {LeagueRepository} from '../database/repository/league';
 import {League} from '../model/league';
+import {LeagueMongoDbRepository} from '../database/repository/league';
 
 import {RequestWithBody, RequestWithBodyAndParams} from './types';
 
@@ -22,10 +16,10 @@ const leagueRouter: Router = router();
 leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
   try {
     const db = await MongoDatabase.connect();
-    const leagueRepository = new LeagueRepository(db);
+    const leagueRepository = new LeagueMongoDbRepository(db);
 
-    const leagues: Array<WithId<Document>> | null =
-        await leagueRepository.find('leagues');
+    const leagues: Array<League> | null =
+        await leagueRepository.findAll();
 
     if (leagues !== null && leagues.length > 0) {
       res.status(200);
@@ -49,13 +43,11 @@ leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
 leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
   try {
     const db = await MongoDatabase.connect();
-    const leagueRepository = new LeagueRepository(db);
+    const leagueRepository = new LeagueMongoDbRepository(db);
 
-    const league: WithId<Document> | null =
+    const league: League | null =
       await leagueRepository
-          .findByObjectId(
-              'leagues',
-              ObjectId.createFromHexString(req.params.id));
+          .findById(ObjectId.createFromHexString(req.params.id));
 
     if (league !== null) {
       res.status(200);
@@ -79,23 +71,12 @@ leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
 leagueRouter.post('/', async (req: RequestWithBody<League>, res) => {
   try {
     const db = await MongoDatabase.connect();
-    const leagueRepository = new LeagueRepository(db);
+    const leagueRepository = new LeagueMongoDbRepository(db);
 
-    const mongoResponse: InsertOneResult<Document> =
-      await leagueRepository.insert('leagues', req.body);
+    const inserted = await leagueRepository.insert(req.body);
 
-    console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
-
-    if (mongoResponse !== null) {
-      const league =
-        await leagueRepository
-            .findByObjectId('leagues', mongoResponse.insertedId);
-
-      res.status(200);
-      res.send(league);
-    } else {
-      throw new Error('InsertOneResult was null');
-    }
+    res.status(200);
+    res.send(inserted);
   } catch (err) {
     console.log(`[ERROR] Error on POST "${req.path}": ${err}`);
 
@@ -113,28 +94,13 @@ leagueRouter.patch(
         req: RequestWithBodyAndParams<{id: string}, WithId<League>>, res) => {
       try {
         const db = await MongoDatabase.connect();
-        const leagueRepository = new LeagueRepository(db);
+        const leagueRepository = new LeagueMongoDbRepository(db);
 
         const leagueId = ObjectId.createFromHexString(req.params.id);
+        const league = await leagueRepository.update(leagueId, req.body);
 
-        const mongoResponse: UpdateResult =
-          await leagueRepository
-              .updateDocument('leagues', leagueId, req.body);
-
-        console.log(`MongoDB response: ${JSON.stringify(mongoResponse)}`);
-
-        if (mongoResponse !== null) {
-          const league =
-            await leagueRepository
-                .findByObjectId('leagues', leagueId);
-
-          res.status(200);
-          res.send(league);
-        } else {
-          throw new Error(
-              `Could not patch document of _id "${req.body._id} with fields ` +
-              `"${JSON.stringify(req.body)}"`);
-        }
+        res.status(200);
+        res.send(league);
       } catch (err) {
         console.log(`[ERROR] Error on PATCH "${req.path}": ${err}`);
 
