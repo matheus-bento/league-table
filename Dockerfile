@@ -8,6 +8,6 @@ COPY package-lock.json .
 
 RUN npm install --omit=dev
 
-COPY /dist .
+COPY /dist/src .
 
 ENTRYPOINT [ "node", "./index.js" ]
