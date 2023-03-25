@@ -32,7 +32,9 @@ leagueRouter.get('/', async (req: Request<{id: string}>, res: Response) => {
     console.log(`[ERROR] Error on GET "${req.path}": ${err}`);
 
     res.status(500);
-    res.send('An error occurred when processing this request');
+    res.send({
+      message: (err as Error).message,
+    });
   }
 });
 
@@ -60,7 +62,9 @@ leagueRouter.get('/:id', async (req: Request<{id: string}>, res: Response) => {
     console.log(`[ERROR] Error on GET "${req.path}": ${err}`);
 
     res.status(500);
-    res.send('An error occurred when processing this request');
+    res.send({
+      message: (err as Error).message,
+    });
   }
 });
 
@@ -81,7 +85,9 @@ leagueRouter.post('/', async (req: RequestWithBody<League>, res) => {
     console.log(`[ERROR] Error on POST "${req.path}": ${err}`);
 
     res.status(500);
-    res.send('An error occurred when processing this request');
+    res.send({
+      message: (err as Error).message,
+    });
   }
 });
 
@@ -105,7 +111,9 @@ leagueRouter.patch(
         console.log(`[ERROR] Error on PATCH "${req.path}": ${err}`);
 
         res.status(500);
-        res.send('An error occurred when processing this request');
+        res.send({
+          message: (err as Error).message,
+        });
       }
     });
 
