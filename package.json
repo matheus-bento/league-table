@@ -9,7 +9,7 @@
     "build": "npm run lint && npx tsc",
     "rebuild": "npm run clean && npm run build",
     "lint": "npx eslint --fix 'src/**' 'test/**'",
-    "test": "npx mocha ./test --recursive"
+    "test": "npx mocha ./dist/test --recursive"
   },
   "repository": {
     "type": "git",
