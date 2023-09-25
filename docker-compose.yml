@@ -6,16 +6,17 @@ services:
     ports:
       - 8080:80
     environment:
-      - MONGODB_CONN_STR=mongodb://league-table:password@mongo:27017/league-table?authSource=admin
-      - PORT=80
-  mongo:
-    image: mongo
+      - LeagueTable_Connection__MySqlConnectionString="Server=mysql; Database=league-table; Uid=db-user; Pwd=db-user-passwd"
+  mysql:
+    image: mysql:8.1
     container_name: db
     ports:
-      - 27017:27017
+      - 3306:3306
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=league-table
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=league-table
+      - MYSQL_USER=db-user
+      - MYSQL_PASSWORD=db-user-passwd
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
     volumes:
       - db:/data/db
 volumes:
