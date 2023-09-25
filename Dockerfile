@@ -5,7 +5,7 @@ WORKDIR /source
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY src/LeagueTable/LeagueTable.csproj ./src/LeagueTable/
-COPY src/LeagueTable.Dao/LeagueTable.Dao.csproj ./src/LeagueTable.Dao/
+COPY src/LeagueTable.Model/LeagueTable.Model.csproj ./src/LeagueTable.Model/
 RUN dotnet restore
 
 # copy everything else and build app

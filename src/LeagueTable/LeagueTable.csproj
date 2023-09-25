@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LeagueTable.Dao\LeagueTable.Dao.csproj" />
+    <ProjectReference Include="..\LeagueTable.Model\LeagueTable.Model.csproj" />
   </ItemGroup>
 
 </Project>

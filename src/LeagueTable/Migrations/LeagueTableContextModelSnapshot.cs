@@ -18,7 +18,7 @@ namespace LeagueTable.Migrations
                 .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("LeagueTable.Dao.Table", b =>
+            modelBuilder.Entity("LeagueTable.Model.Table", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

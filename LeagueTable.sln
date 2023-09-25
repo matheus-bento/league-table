@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{338A5BE4-CB2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeagueTable", "src\LeagueTable\LeagueTable.csproj", "{1E10D4F9-AC4A-4381-AC07-E87FB877B6F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeagueTable.Dao", "src\LeagueTable.Dao\LeagueTable.Dao.csproj", "{63364046-A570-479C-A950-7C375D5F21B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeagueTable.Model", "src\LeagueTable.Model\LeagueTable.Model.csproj", "{63364046-A570-479C-A950-7C375D5F21B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace LeagueTable.Dao
+namespace LeagueTable.Model
 {
     /// <summary>
     ///     Represents a league table
