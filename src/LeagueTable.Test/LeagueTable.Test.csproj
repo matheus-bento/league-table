@@ -22,4 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LeagueTable\LeagueTable.csproj" />
+  </ItemGroup>
+
 </Project>
