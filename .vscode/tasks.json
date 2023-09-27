@@ -7,16 +7,20 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/league-table.sln",
+                "${workspaceFolder}/LeagueTable.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "label": "Docker Build",
             "command": "./docker-compose-install.sh",
             "type": "process"
-        },
+        }
     ]
 }
