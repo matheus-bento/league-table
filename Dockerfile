@@ -6,6 +6,8 @@ WORKDIR /source
 COPY *.sln .
 COPY src/LeagueTable/LeagueTable.csproj ./src/LeagueTable/
 COPY src/LeagueTable.Model/LeagueTable.Model.csproj ./src/LeagueTable.Model/
+COPY src/LeagueTable.Test/LeagueTable.Test.csproj ./src/LeagueTable.Test/
+
 RUN dotnet restore
 
 # copy everything else and build app
