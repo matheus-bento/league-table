@@ -1,4 +1,5 @@
 using LeagueTable;
+using LeagueTable.Service.RoundRobinLeagueService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.Configure<ConnectionOptions>(
     builder.Configuration.GetSection("Connection"));
 
 builder.Services.AddDbContext<LeagueTableContext>();
+
+builder.Services.AddSingleton<IRoundRobinLeagueService>(
+    (serviceProvider) => new RoundRobinLeagueService());
 
 var app = builder.Build();
 
