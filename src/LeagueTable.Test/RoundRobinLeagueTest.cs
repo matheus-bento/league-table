@@ -110,4 +110,33 @@ public class RoundRobinLeagueTest
             Assert.True(secondHalfMatch != null);
         }
     }
+
+    [Theory]
+    [InlineData("Team A")]
+    [InlineData("Team B")]
+    [InlineData("Team C")]
+    [InlineData("Team D")]
+    public void ShouldGenerateOneMatchByRoundForEachTeam(string team)
+    {
+        IEnumerable<string> teams = new string[]
+        {
+            "Team A",
+            "Team B",
+            "Team C",
+            "Team D"
+        };
+
+        IEnumerable<RoundRobinLeagueMatch>[] roundRobinLeagueTable =
+            this._roundRobinLeagueService
+                .GenerateRoundRobinLeagueTable(teams)
+                .ToArray();
+
+        foreach (IEnumerable<RoundRobinLeagueMatch> round in roundRobinLeagueTable)
+        {
+            int teamMatchesInCurrRound =
+                round.Count(m => m.HomeTeam == team || m.AwayTeam == team);
+
+            Assert.True(teamMatchesInCurrRound == 1);
+        }
+    }
 }
