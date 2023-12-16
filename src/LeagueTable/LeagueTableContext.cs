@@ -9,7 +9,7 @@ namespace LeagueTable
     {
         private readonly IOptions<ConnectionOptions> _connOptions;
 
-        public DbSet<Table> Tables { get; set; }
+        public DbSet<League> Leagues { get; set; }
 
         public LeagueTableContext(IOptions<ConnectionOptions> connOptions)
         {
