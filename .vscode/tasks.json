@@ -2,6 +2,19 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Code Formatting",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "format",
+                "LeagueTable.sln",
+                "--exclude",
+                "src/LeagueTable/Migrations",
+                "--verbosity",
+                "normal"
+            ]
+        },
+        {
             "label": ".NET Build",
             "command": "dotnet",
             "type": "process",
@@ -15,12 +28,18 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "dependsOn": [
+                "Code Formatting"
+            ]
         },
         {
             "label": "Docker Build",
             "command": "./docker-compose-install.sh",
-            "type": "process"
+            "type": "process",
+            "dependsOn": [
+                "Code Formatting"
+            ]
         }
     ]
 }
