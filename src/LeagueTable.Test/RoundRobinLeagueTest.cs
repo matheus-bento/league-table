@@ -45,7 +45,7 @@ public class RoundRobinLeagueTest
                     .GenerateRoundRobinLeagueTable(teams));
     }
 
-    
+
     [Fact]
     public void ShouldGenerateARoundRobinLeagueSuccessfully()
     {

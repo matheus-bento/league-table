@@ -1,5 +1,6 @@
-using LeagueTable.Service.RoundRobinLeagueService.Model;
 using System.Security.Cryptography;
+
+using LeagueTable.Service.RoundRobinLeagueService.Model;
 
 namespace LeagueTable.Service.RoundRobinLeagueService
 {

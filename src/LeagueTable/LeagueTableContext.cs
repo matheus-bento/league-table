@@ -1,4 +1,5 @@
 using LeagueTable.Model;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 

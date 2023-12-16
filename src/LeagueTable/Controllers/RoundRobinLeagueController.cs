@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using LeagueTable.Service.RoundRobinLeagueService;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace LeagueTable.Controllers
 {
